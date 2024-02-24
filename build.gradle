@@ -25,8 +25,8 @@ tasks.withType(JavaCompile) {
 }
 
 application {
-    mainModule = 'com.example.httpchat'
-    mainClass = 'com.example.httpchat.HelloApplication'
+    mainModule = 'com.example.client'
+    mainClass = 'com.example.client.ClientApplication'
 }
 
 javafx {
