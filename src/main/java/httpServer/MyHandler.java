@@ -11,26 +11,43 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MyHandler implements HttpHandler {
     ConcurrentHashMap<String, HttpExchange> map;
 
+    private String broadcast;
+
     @Override
     public void handle(HttpExchange t) throws IOException {
 
         if ("GET".equals(t.getRequestMethod())) { // Вход
             String uri = t.getRequestURI().toString();
-            String login = uri.substring(uri.lastIndexOf('/') + 1, uri.indexOf(':'));
-            String password = uri.substring(uri.indexOf(':') + 1);
-            OutputStream os = t.getResponseBody();
-            String response = "This is the response";
-            if (checkLogin(login, password)) {
-                t.sendResponseHeaders(200, response.length());
-                map.put(login, t);
+            if (uri.substring(uri.lastIndexOf("/") + 1).equals("broadcast")){ // Рассылка сообщений всем
+                // TODO Сделать через BufferedReader и "буфер обмена"
+                System.out.println(map);
+//                for (HttpExchange e
+//                : map.values()){
+                    System.out.println(t);
+                    OutputStream outputStream = t.getResponseBody();
+                    System.out.println("ee");
+                    t.sendResponseHeaders(200, broadcast.length());
+                    outputStream.write(broadcast.getBytes());
+                    outputStream.close();
+//                }
             } else {
-                t.sendResponseHeaders(404, response.length());
+                String login = uri.substring(uri.lastIndexOf('/') + 1, uri.indexOf(':'));
+                String password = uri.substring(uri.indexOf(':') + 1);
+                OutputStream os = t.getResponseBody();
+                String response = "This is the response";
+                if (checkLogin(login, password)) {
+                    t.sendResponseHeaders(200, response.length());
+                    map.put(login, t);
+                } else {
+                    t.sendResponseHeaders(404, response.length());
+                }
+
+                os.write(response.getBytes());
+                os.close();
             }
 
-            os.write(response.getBytes());
-            os.close();
         } else if ("POST".equals(t.getRequestMethod())) { // Отправка сообщений
-            System.out.println(map);
+            //System.out.println(map);
             sendMessage(t);
 //            BufferedReader os2 = new BufferedReader(new InputStreamReader(t.getRequestBody()));
 //            String request = os2.readLine();
@@ -87,12 +104,13 @@ public class MyHandler implements HttpHandler {
         try{
             BufferedReader os2 = new BufferedReader(new InputStreamReader(e.getRequestBody()));
             String request = os2.readLine();
+            broadcast = request;
             //if(request != null){
-                sendAll(request);
-                OutputStream os3 = e.getResponseBody();
-                e.sendResponseHeaders(200, request.length());
-                os3.write(request.getBytes());
-                os3.close();
+//                sendAll(request);
+            OutputStream os3 = e.getResponseBody();
+            e.sendResponseHeaders(200, request.length());
+            os3.write(request.getBytes());
+            os3.close();
             //}
 
         } catch (IOException ex){

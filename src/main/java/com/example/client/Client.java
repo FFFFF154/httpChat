@@ -5,6 +5,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -69,5 +70,19 @@ public class Client {
         } catch (Exception e){
         }
         return 404;
+    }
+
+    public String waitResponse(){
+        HttpRequest request= HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/broadcast"))
+                .version(HttpClient.Version.HTTP_1_1)
+                .GET()
+                .build();
+        CompletableFuture<HttpResponse<String>> resp = httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+        try{
+            return resp.get().body();
+        } catch (Exception e){
+        }
+        return null;
     }
 }

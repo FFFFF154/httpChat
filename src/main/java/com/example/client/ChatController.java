@@ -29,18 +29,39 @@ public class ChatController {
     private TextArea logins;
     @FXML
     private Button button;
+    String prevStr = "";
+    String resStr;
     @FXML
     public void sendMessage(){
         String message = text.getText();
         text.setText("");
-        String waitStr;
-        if ((waitStr = waitResponse()) != null){
-            area.appendText(waitStr);
-        }
+
         // Отправка сообщения
         String response = client.createPostRequest("{ " + client.getLogin() + " } : " + message);
+        resStr = response;
         String showMessage = response + "\n";
         area.appendText(showMessage);
+
+    }
+
+    public void updateArea(){
+        String[] waitStr = new String[1];
+        new Thread(() -> {
+            try{
+                while(true){
+                    Thread.sleep(1000);
+                    if (((waitStr[0] = client.waitResponse()) != null) && (!prevStr.equals(waitStr[0])) && (!waitStr[0].equals(resStr))){ // TODO появление текста без кнопки
+                        area.appendText(waitStr[0] + "\n");
+                        prevStr = waitStr[0];
+                    }
+                }
+
+            }catch (InterruptedException e){
+
+            }
+
+        }).start();
+
 
     }
 
@@ -48,24 +69,6 @@ public class ChatController {
         this.client = client;
     }
 
-    private String waitResponse(){
-        String response ;
-        HttpClient httpClient = HttpClient.newBuilder()
-                .version(HttpClient.Version.HTTP_1_1)
-                .build();
-        HttpRequest request= HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/"))
-                .version(HttpClient.Version.HTTP_1_1)
-                .headers("Content-Type", "text/plain;charset=UTF-8")
-                .POST(HttpRequest.BodyPublishers.ofString("-0-"))
-                .build();
-        CompletableFuture<HttpResponse<String>> resp = httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
-        try{
-            response = resp.get().body();
-        } catch (Exception e){
-            response = null;
-        }
-        return response;
-    }
+
 
 }
