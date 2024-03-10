@@ -1,6 +1,5 @@
-package httpServer;
+package com.example.httpServer;
 
-import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
@@ -10,7 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public class Server {
-    private static final ConcurrentHashMap<String, HttpExchange> map = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Integer> map = new ConcurrentHashMap<>();
     public static void main(String[] args) {
         try{
             HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);

@@ -1,15 +1,20 @@
-package httpServer;
+package com.example.httpServer;
 
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import java.io.*;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MyHandler implements HttpHandler {
-    ConcurrentHashMap<String, HttpExchange> map;
+    ConcurrentHashMap<String, Integer> map;
 
     private String broadcast;
 
@@ -18,18 +23,14 @@ public class MyHandler implements HttpHandler {
 
         if ("GET".equals(t.getRequestMethod())) { // Вход
             String uri = t.getRequestURI().toString();
-            if (uri.substring(uri.lastIndexOf("/") + 1).equals("broadcast")){ // Рассылка сообщений всем
-                // TODO Сделать через BufferedReader и "буфер обмена"
+            if (uri.substring(uri.lastIndexOf("/") + 1).equals("broadcast")) { // Рассылка сообщений всем
                 System.out.println(map);
-//                for (HttpExchange e
-//                : map.values()){
-                    System.out.println(t);
-                    OutputStream outputStream = t.getResponseBody();
-                    System.out.println("ee");
-                    t.sendResponseHeaders(200, broadcast.length());
-                    outputStream.write(broadcast.getBytes());
-                    outputStream.close();
-//                }
+                System.out.println(t);
+                OutputStream outputStream = t.getResponseBody();
+                System.out.println("ee");
+                t.sendResponseHeaders(200, broadcast.length());
+                outputStream.write(broadcast.getBytes());
+                outputStream.close();
             } else {
                 String login = uri.substring(uri.lastIndexOf('/') + 1, uri.indexOf(':'));
                 String password = uri.substring(uri.indexOf(':') + 1);
@@ -37,28 +38,16 @@ public class MyHandler implements HttpHandler {
                 String response = "This is the response";
                 if (checkLogin(login, password)) {
                     t.sendResponseHeaders(200, response.length());
-                    map.put(login, t);
+                    map.put(login, login.hashCode());
                 } else {
                     t.sendResponseHeaders(404, response.length());
                 }
-
                 os.write(response.getBytes());
                 os.close();
             }
 
         } else if ("POST".equals(t.getRequestMethod())) { // Отправка сообщений
-            //System.out.println(map);
             sendMessage(t);
-//            BufferedReader os2 = new BufferedReader(new InputStreamReader(t.getRequestBody()));
-//            String request = os2.readLine();
-//            os2.close();
-//
-//            OutputStream os3 = t.getResponseBody();
-//            t.sendResponseHeaders(200, request.length());
-//            os3.write(request.getBytes());
-//            os3.close();
-
-
         }
     }
 
@@ -72,7 +61,6 @@ public class MyHandler implements HttpHandler {
                     if (password.equals(strPassword)) {
                         return true;
                     }
-
                 }
             }
         } catch (Exception e) {
@@ -80,40 +68,45 @@ public class MyHandler implements HttpHandler {
         return false;
     }
 
-    public void setHashMap(ConcurrentHashMap<String, HttpExchange> map) {
+    public void setHashMap(ConcurrentHashMap<String, Integer> map) {
         this.map = map;
     }
 
-    private void sendAll(String req){
-        try{
-            for (HttpExchange ex
-            :map.values()){
-                System.out.println(ex);
-                OutputStream os3 = ex.getResponseBody();
-                System.out.println(1);
-                ex.sendResponseHeaders(200, req.length());
-                System.out.println(2);
-                os3.write(req.getBytes());
-                System.out.println(3);
-                os3.close();
+    private void sendAll(String req) { //TODO Нужно отправлять список логинов
+        HttpClient serverClient = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
+                .build();
+        System.out.println(map);
+        for (Map.Entry<String, Integer> entry
+                : map.entrySet()) {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:" + entry.getValue() % 1000 + "/"))
+                    .version(HttpClient.Version.HTTP_1_1)
+                    .headers("Content-Type", "text/plain;charset=UTF-8")
+                    .POST(HttpRequest.BodyPublishers.ofString(req))
+                    .build();
+            try {
+                HttpResponse<String> response = serverClient.send(request, HttpResponse.BodyHandlers.ofString());
+            } catch (Exception e) {
+                System.err.println("POPPOPPOPO");
+                System.err.println(map);
+                // Удаление из map челика
+                map.remove(entry.getKey());
             }
-        }catch (Exception e){
         }
     }
-    private void sendMessage(HttpExchange e){
-        try{
+
+    private void sendMessage(HttpExchange e) {
+        try {
             BufferedReader os2 = new BufferedReader(new InputStreamReader(e.getRequestBody()));
             String request = os2.readLine();
-            broadcast = request;
-            //if(request != null){
-//                sendAll(request);
+            sendAll(request);
             OutputStream os3 = e.getResponseBody();
             e.sendResponseHeaders(200, request.length());
             os3.write(request.getBytes());
             os3.close();
-            //}
 
-        } catch (IOException ex){
+        } catch (IOException ex) {
 
         }
 

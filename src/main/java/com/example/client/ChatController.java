@@ -24,18 +24,19 @@ public class ChatController {
     @FXML
     private TextField text;
     @FXML
-    private TextArea area;
-    @FXML
     private TextArea logins;
     @FXML
+    private TextArea area;
+    @FXML
     private Button button;
+
     String prevStr = "";
     String resStr;
     @FXML
     public void sendMessage(){
         String message = text.getText();
         text.setText("");
-
+        updateArea();
         // Отправка сообщения
         String response = client.createPostRequest("{ " + client.getLogin() + " } : " + message);
         resStr = response;
@@ -44,13 +45,18 @@ public class ChatController {
 
     }
 
+    public void receivingMessage(){
+        area.appendText(client.getRequestMessage() + "\n");
+    }
+
     public void updateArea(){
         String[] waitStr = new String[1];
         new Thread(() -> {
             try{
                 while(true){
+                    //logins.appendText(client.getPersons());
                     Thread.sleep(1000);
-                    if (((waitStr[0] = client.waitResponse()) != null) && (!prevStr.equals(waitStr[0])) && (!waitStr[0].equals(resStr))){ // TODO появление текста без кнопки
+                    if (((waitStr[0] = client.getRequestMessage()) != null) && (!prevStr.equals(waitStr[0])) && (!waitStr[0].equals(resStr))){
                         area.appendText(waitStr[0] + "\n");
                         prevStr = waitStr[0];
                     }
@@ -61,8 +67,6 @@ public class ChatController {
             }
 
         }).start();
-
-
     }
 
     public void setClient(Client client){ // Передача клиента

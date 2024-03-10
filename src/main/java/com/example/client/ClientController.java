@@ -41,6 +41,8 @@ public class ClientController {
                 ChatController chatController = fxmlLoader.getController();
                 chatController.setClient(client);
                 stage1.show();
+                ClientServer clientServer = new ClientServer(client);
+                clientServer.createServer();
             } catch (IOException e){
 
             }
@@ -62,7 +64,5 @@ public class ClientController {
             myPassword.setText("");
             message.setText("The login is already taken");
         }
-        //Stage stage = (Stage) button1.getScene().getWindow();
-        //stage.close();
     }
 }
