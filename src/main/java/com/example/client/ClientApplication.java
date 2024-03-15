@@ -21,6 +21,7 @@ public class ClientApplication extends Application {
             Scene scene = new Scene(fxmlLoader.load(), 320, 240);
             primaryStage.setTitle("Hello!");
             primaryStage.setScene(scene);
+            primaryStage.setResizable(false);
             primaryStage.show();
         }catch (IOException e){
 

@@ -1,6 +1,5 @@
 package com.example.httpServer;
 
-import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -9,7 +8,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -83,13 +81,13 @@ public class MyHandler implements HttpHandler {
                     .uri(URI.create("http://localhost:" + entry.getValue() % 1000 + "/"))
                     .version(HttpClient.Version.HTTP_1_1)
                     .headers("Content-Type", "text/plain;charset=UTF-8")
-                    .POST(HttpRequest.BodyPublishers.ofString(req))
+                    .POST(HttpRequest.BodyPublishers.ofString(req + map))
                     .build();
             try {
                 HttpResponse<String> response = serverClient.send(request, HttpResponse.BodyHandlers.ofString());
             } catch (Exception e) {
-                System.err.println("POPPOPPOPO");
-                System.err.println(map);
+//                System.err.println("POPPOPPOPO");
+//                System.err.println(map);
                 // Удаление из map челика
                 map.remove(entry.getKey());
             }

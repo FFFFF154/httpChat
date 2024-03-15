@@ -15,7 +15,7 @@
 
     <Label fx:id="text" text="Authorization"/>
     <TextField fx:id="login" promptText="Login"/>
-    <PasswordField fx:id="myPassword" promptText="Password"/>
+    <PasswordField fx:id="myPassword" promptText="Password" onAction="#buttonOfAuthorization"/>
     <Label fx:id="message"/>
     <Button fx:id="button1" text="Sign in!" onAction="#buttonOfAuthorization"/>
     <Button text="Sign up!" onAction="#buttonOfRegistration"/>

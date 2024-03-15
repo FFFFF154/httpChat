@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class ClientController {
 
-    static Client client = new Client();
+    Client client = new Client();
     @FXML
     private TextField login;
     @FXML
@@ -29,21 +29,22 @@ public class ClientController {
         String log = login.getText();
         client.setLogin(log);
         String pas = myPassword.getText();
-        if(client.createRequestLog(log, pas) == 200){
+        if (client.createRequestLog(log, pas) == 200) {
             Stage stage = (Stage) button1.getScene().getWindow();
             stage.close();
-            try{
+            try {
                 FXMLLoader fxmlLoader = new FXMLLoader(ClientApplication.class.getResource("chat-view.fxml"));
                 Scene scene = new Scene(fxmlLoader.load(), 600, 400);
                 Stage stage1 = new Stage();
                 stage1.setScene(scene);
+                stage1.setResizable(false);
                 stage1.setTitle("Tornados-Chat");
                 ChatController chatController = fxmlLoader.getController();
                 chatController.setClient(client);
                 stage1.show();
-                ClientServer clientServer = new ClientServer(client);
+                ClientServer clientServer = new ClientServer(client, chatController);
                 clientServer.createServer();
-            } catch (IOException e){
+            } catch (IOException e) {
 
             }
 
@@ -54,11 +55,11 @@ public class ClientController {
 
     }
 
-    public void buttonOfRegistration(){
+    public void buttonOfRegistration() {
         String log = login.getText();
         client.setLogin(log);
         String pas = myPassword.getText();
-        if(client.createRequestReg(log, pas) == 200) {
+        if (client.createRequestReg(log, pas) == 200) {
             message.setText("success!");
         } else {
             myPassword.setText("");

@@ -32,42 +32,46 @@ public class ChatController {
 
     String prevStr = "";
     String resStr;
+
+    public TextArea getArea(){
+        return area;
+    }
+
+    public TextArea getLogins(){
+        return logins;
+    }
+
     @FXML
     public void sendMessage(){
         String message = text.getText();
         text.setText("");
-        updateArea();
+
         // Отправка сообщения
-        String response = client.createPostRequest("{ " + client.getLogin() + " } : " + message);
+        String response = client.createPostRequest("[ " + client.getLogin() + " ] : " + message);
         resStr = response;
-        String showMessage = response + "\n";
-        area.appendText(showMessage);
-
     }
 
-    public void receivingMessage(){
-        area.appendText(client.getRequestMessage() + "\n");
-    }
-
-    public void updateArea(){
-        String[] waitStr = new String[1];
-        new Thread(() -> {
-            try{
-                while(true){
-                    //logins.appendText(client.getPersons());
-                    Thread.sleep(1000);
-                    if (((waitStr[0] = client.getRequestMessage()) != null) && (!prevStr.equals(waitStr[0])) && (!waitStr[0].equals(resStr))){
-                        area.appendText(waitStr[0] + "\n");
-                        prevStr = waitStr[0];
-                    }
-                }
-
-            }catch (InterruptedException e){
-
-            }
-
-        }).start();
-    }
+//    public void updateArea(){
+//        String[] waitStr = new String[1];
+//        new Thread(() -> {
+//            try{
+//                while(true){
+//                    Thread.sleep(1000);
+//                    if (((waitStr[0] = client.getRequestMessage()) != null) && (!prevStr.equals(waitStr[0])) && (!waitStr[0].equals(resStr))){
+//                        logins.clear();
+//                        area.appendText(waitStr[0].substring(0, waitStr[0].indexOf("{")) + "\n");
+//                        logins.appendText(client.getPersons());
+//                        prevStr = waitStr[0];
+//                    }
+//
+//                }
+//
+//            }catch (InterruptedException e){
+//
+//            }
+//
+//        }).start();
+//    }
 
     public void setClient(Client client){ // Передача клиента
         this.client = client;

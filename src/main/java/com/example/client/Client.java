@@ -1,18 +1,9 @@
 package com.example.client;
 
-import com.sun.net.httpserver.HttpServer;
-
-import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Duration;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class Client {
 
@@ -90,26 +81,29 @@ public class Client {
 //        return null;
 //    }
 
-    public void setMessage(String requestMessage){
-        this.requestMessage = requestMessage;
-    }
-
-    public String getRequestMessage(){
-        return requestMessage;
-    }
-
-    public void setPersons(String persons){
-        StringBuilder stringBuilder = new StringBuilder(persons);
-        while(stringBuilder.indexOf("=") != -1){
-            stringBuilder.delete(stringBuilder.indexOf("="), stringBuilder.indexOf(","));
-        }
-        this.persons = stringBuilder.toString();
-
-    }
-
-    public String getPersons(){
-        return persons;
-    }
-
-
+//    public void setMessage(String requestMessage){
+//        persons = requestMessage;
+//        this.requestMessage = requestMessage;
+//    }
+//
+//    public String getRequestMessage(){
+//        return requestMessage;
+//    }
+//
+//
+//    public void setPersons(String persons){
+//        StringBuilder stringBuilder = new StringBuilder(persons);
+//        while(stringBuilder.indexOf("=") != -1){
+//            stringBuilder.delete(stringBuilder.indexOf("="), stringBuilder.indexOf(","));
+//        }
+//        this.persons = stringBuilder.toString();
+//
+//    }
+//
+//    public String getPersons(){
+//        persons = persons.substring(persons.indexOf("{") + 1, persons.lastIndexOf("}"));
+//        persons = persons.replaceAll(" ", "");
+//        persons = persons.replaceAll(",", "\n");
+//        return persons;
+//    }
 }
