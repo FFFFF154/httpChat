@@ -32,6 +32,10 @@ public class MyHandler implements HttpHandler {
             } else {
                 String login = uri.substring(uri.lastIndexOf('/') + 1, uri.indexOf(':'));
                 String password = uri.substring(uri.indexOf(':') + 1);
+                File file = new File("C:\\Users\\dns\\Documents\\java\\httpChat\\" + login + ".txt");
+                if (!file.exists()){
+                    file.createNewFile();
+                }
                 OutputStream os = t.getResponseBody();
                 String response = "This is the response";
                 if (checkLogin(login, password)) {

@@ -9,7 +9,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-import java.io.IOException;
+import java.io.*;
 
 public class ClientController {
 
@@ -44,6 +44,14 @@ public class ClientController {
                 stage1.show();
                 ClientServer clientServer = new ClientServer(client, chatController);
                 clientServer.createServer();
+                try (FileReader fileReader = new FileReader("C:\\Users\\dns\\Documents\\java\\httpChat\\" + log + ".txt")){
+                    BufferedReader bf = new BufferedReader(fileReader);
+                    String line;
+                    while((line = bf.readLine()) != null){
+                        chatController.getArea().appendText(line + "\n");// Чтение из файла
+                    }
+                }
+
             } catch (IOException e) {
 
             }

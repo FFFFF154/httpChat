@@ -18,6 +18,8 @@ public class RegistrationHandler implements HttpHandler { // Регистрац�
                 String response = "This is the response";
                 if (!checkLog(login)) {
                     String person = login + ":" + password;
+                    File history = new File("C:\\Users\\dns\\Documents\\java\\httpChat\\" + login + ".txt");
+                    System.out.println(history.createNewFile());
                     file.write(person);
                     file.append('\n');
                     t.sendResponseHeaders(200, response.length());

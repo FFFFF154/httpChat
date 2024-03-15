@@ -5,10 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 
 public class ClientHandler implements HttpHandler {
 
@@ -26,7 +23,11 @@ public class ClientHandler implements HttpHandler {
         if ("POST".equals(t.getRequestMethod())) {
             BufferedReader bf = new BufferedReader(new InputStreamReader(t.getRequestBody()));
             String request = bf.readLine();
-            chatController.getArea().appendText(request.substring(0, request.indexOf("{")) + "\n");
+            String line = request.substring(0, request.indexOf("{")) + "\n";
+            chatController.getArea().appendText(line);
+            try(FileWriter fileWriter = new FileWriter("C:\\Users\\dns\\Documents\\java\\httpChat\\" + client.getLogin() + ".txt",true)){
+                fileWriter.write(line);
+            }
             chatController.getLogins().clear();
             String persons = request.substring(request.indexOf("{") + 1, request.lastIndexOf("}"));
             persons = persons.replaceAll(" ", "");
